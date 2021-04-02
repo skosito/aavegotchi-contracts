@@ -4,8 +4,9 @@
 async function main () {
   let raffleContract = await ethers.getContractAt('RafflesContract', '0x6c723cac1E35FE29a175b287AE242d424c52c1CE')
   // let stats = await raffleContract.ticketStats(3, { gasLimit: 200000000000 })
-  let stats = await raffleContract.ticketStats(3)
-  console.log(stats)
+  // let stats = await raffleContract.ticketStats(3)
+  const entrants = await raffleContract.getEntrants(3, { gasLimit: 20000000 })
+  console.log(entrants.length)
 }
 
 // We recommend this pattern to be able to use async/await everywhere
