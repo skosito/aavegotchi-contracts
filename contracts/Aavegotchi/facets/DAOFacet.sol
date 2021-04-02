@@ -2,6 +2,7 @@
 pragma solidity 0.8.1;
 
 import {Modifiers, ItemType, WearableSet, NUMERIC_TRAITS_NUM, EQUIPPED_WEARABLE_SLOTS} from "../libraries/LibAppStorage.sol";
+import {LibDiamond} from "../../shared/libraries/LibDiamond.sol";
 import {AavegotchiCollateralTypeIO} from "../libraries/LibAavegotchi.sol";
 import {LibERC1155} from "../../shared/libraries/LibERC1155.sol";
 import {LibItems} from "../libraries/LibItems.sol";
@@ -161,5 +162,24 @@ contract DAOFacet is Modifiers {
     function setGameManager(address _gameManager) external onlyDaoOrOwner {
         emit GameManagerTransferred(s.gameManager, _gameManager);
         s.gameManager = _gameManager;
+    }
+
+    function backupOwner() external view returns (address backupOwner_) {
+        backupOwner_ = s.backupOwner;
+    }
+
+    function setBackupOwner(address _newBackupOwner) external {
+        if (msg.sender == s.backupOwner) {
+            s.backupOwner = _newBackupOwner;
+        } else if (s.backupOwner == address(0) && msg.sender == LibDiamond.contractOwner()) {
+            s.backupOwner = _newBackupOwner;
+        } else {
+            revert("DAOFacet: Not backup owner");
+        }
+    }
+
+    function backupTransferOwnership(address _newOwner) external {
+        require(msg.sender == s.backupOwner, "DAOFacet: Not backup owner");
+        LibDiamond.setContractOwner(_newOwner);
     }
 }
