@@ -21,11 +21,27 @@ function getSelector (func) {
 }
 
 async function main () {
+
+
+ 
+
   const diamondAddress = '0x86935F11C86623deC8a25696E1C19a8659CbF95d'
   let signer
   let owner = await (await ethers.getContractAt('OwnershipFacet', diamondAddress)).owner()
   const testing = ['hardhat', 'localhost'].includes(hre.network.name)
   if (testing) {
+
+
+     //Reset the fork
+  await network.provider.request({
+    method: "hardhat_reset",
+    params: [{
+      forking: {
+        jsonRpcUrl:process.env.MATIC_URL
+      }
+    }]
+  })
+
     await hre.network.provider.request({
       method: 'hardhat_impersonateAccount',
       params: [owner]
@@ -89,6 +105,34 @@ async function main () {
 
   const backupOwner = await daoFacet.backupOwner()
   console.log('New backup owner:', backupOwner)
+
+
+  if (testing) {
+
+    //First send some MATIC tokens to the backupOwner so it can execute the tx
+    await signer.sendTransaction({
+      to: backupOwner,
+      value: ethers.utils.parseEther("1.0")
+  });
+
+    //Impersonate backup owner
+    await hre.network.provider.request({
+      method: 'hardhat_impersonateAccount',
+      params: [backupOwner]
+    })
+    signer = await ethers.provider.getSigner(backupOwner)
+
+    const signedDaoFacet = await daoFacet.connect(signer)
+
+    //Now set the owner of the contract to the backup owner
+    await signedDaoFacet.backupTransferOwnership(backupOwner)
+    let newOwner = await (await ethers.getContractAt('OwnershipFacet', diamondAddress)).owner()
+    console.log('new owner is:',newOwner)
+
+
+  } 
+
+
 }
 
 main()
