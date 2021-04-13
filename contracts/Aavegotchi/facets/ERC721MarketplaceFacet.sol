@@ -137,6 +137,12 @@ contract ERC721MarketplaceFacet is Modifiers {
         category_ = s.aavegotchis[_erc721TokenId].status; // 0 == portal, 1 == vrf pending, 2 == open portal, 3 == Aavegotchi
     }
 
+    /* to do: add addERC721Category method 
+    function addERC721Category(address _erc721TokenAddress, address _receiveFeesAddress, uint256 _feesAmount)
+
+    Also emits the AddERC721Category event
+    */
+
     function addERC721Listing(
         address _erc721TokenAddress,
         uint256 _erc721TokenId,
@@ -205,6 +211,20 @@ contract ERC721MarketplaceFacet is Modifiers {
         address seller = listing.seller;
         require(seller != buyer, "ERC721Marketplace: buyer can't be seller");
         require(IERC20(s.ghstContract).balanceOf(buyer) >= priceInWei, "ERC721Marketplace: not enough GHST");
+
+        /*To do: If category isn't part of the Aavegotchi ecosystem (0,1,2,3) then the fee should be dynamic. 
+
+        i.e:
+
+        if (listing.category <= 3) {
+            normal fee schedule
+        }
+        else {
+            //Send the remaining fees to the NFT creator's address.
+        }
+
+        
+        */
 
         listing.timePurchased = block.timestamp;
         LibERC721Marketplace.removeERC721ListingItem(_listingId, seller);

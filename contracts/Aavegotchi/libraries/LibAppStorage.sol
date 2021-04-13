@@ -140,6 +140,15 @@ struct ERC721Listing {
     bool cancelled;
 }
 
+/*
+To do: Add ERC721Listing struct with category information
+
+(is it okay to add a new struct in the middle of this file? or does it need to go to the end?)
+    address erc721TokenAddress;
+    address receiveFeesAddress;
+    uint256 feesAmount;
+*/
+
 struct ListingListItem {
     uint256 parentListingId;
     uint256 listingId;
