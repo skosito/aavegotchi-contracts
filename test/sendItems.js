@@ -49,8 +49,13 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     0, 0, 0,  0
   ]
 
-  let diamondEquip= [
-    0, 0, 0, 0, 0, 51,
+  let staff1= [
+    0, 0, 0, 0, 0, 64,
+    0, 0, 0,  0, 0, 0,
+    0, 0, 0,  0
+  ]
+  let staff2= [
+    0, 0, 0, 0, 64, 64,
     0, 0, 0,  0, 0, 0,
     0, 0, 0,  0
   ]
@@ -72,7 +77,7 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     expect(balances.length).to.equal(0)
 
     // Hawaiian Shirt and SantaHat
-    await global.shopFacet.purchaseItemsWithGhst(account, ['114', '115', '116', '126', '127', '128', '129','51'], ['10', '10', '10', '100', '10', '10', '10','1'])
+    await global.shopFacet.purchaseItemsWithGhst(account, ['114', '115', '116', '126', '127', '128', '129','64'], ['10', '10', '10', '100', '10', '10', '10','2'])
     balances = await global.itemsFacet.itemBalances(account)
 
    // console.log('balances:',balances)
@@ -146,12 +151,19 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     expect(item114balance.toString()).to.equal('10')
     expect(item115balance.toString()).to.equal('9')
   })
-  it('should not equip just one hand wearable item', async function(){
+  it('should equip just one hand wearable item', async function(){
     
-    await global.itemsFacet.equipWearables(1,diamondEquip)
+    await global.itemsFacet.equipWearables(1,staff1)
     const currentWearables=await (global.itemsFacet.equippedWearables(1))
     console.log(currentWearables)
-    expect(currentWearables[5].toString()).to.equal('51')
+    expect(currentWearables[5].toString()).to.equal('64')
+  })
+  it('should equip same hand wearable item in the other slot', async function(){
+    
+    await global.itemsFacet.equipWearables(1,staff2)
+    const currentWearables=await (global.itemsFacet.equippedWearables(1))
+   // console.log(currentWearables)
+    expect(currentWearables[4].toString()).to.equal('64')
   })
 
 })
