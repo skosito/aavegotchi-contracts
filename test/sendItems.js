@@ -9,7 +9,7 @@ const { deployProject } = require('../scripts/deployLight.js')
 
 describe('Deploying Contracts, SVG and Minting Items', async function () {
   before(async function () {
-    this.timeout(100000)
+    this.timeout(10000000)
     const deployVars = await deployProject('deployTest')
     global.set = true
     global.account = deployVars.account
@@ -48,6 +48,13 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     0, 0, 0,  0, 0, 0,
     0, 0, 0,  0
   ]
+
+  let diamondEquip= [
+    0, 0, 0, 0, 0, 51,
+    0, 0, 0,  0, 0, 0,
+    0, 0, 0,  0
+  ]
+
   it('Should mint 10,000,000 GHST tokens', async function () {
     await global.ghstTokenContract.mint()
     const balance = await global.ghstTokenContract.balanceOf(global.account)
@@ -65,7 +72,7 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     expect(balances.length).to.equal(0)
 
     // Hawaiian Shirt and SantaHat
-    await global.shopFacet.purchaseItemsWithGhst(account, ['114', '115', '116', '126', '127', '128', '129'], ['10', '10', '10', '100', '10', '10', '10'])
+    await global.shopFacet.purchaseItemsWithGhst(account, ['114', '115', '116', '126', '127', '128', '129','51'], ['10', '10', '10', '100', '10', '10', '10','1'])
     balances = await global.itemsFacet.itemBalances(account)
 
    // console.log('balances:',balances)
@@ -139,6 +146,12 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     expect(item114balance.toString()).to.equal('10')
     expect(item115balance.toString()).to.equal('9')
   })
-
+  it('should not equip just one hand wearable item', async function(){
+    
+    await global.itemsFacet.equipWearables(1,diamondEquip)
+    const currentWearables=await (global.itemsFacet.equippedWearables(1))
+    console.log(currentWearables)
+    expect(currentWearables[5].toString()).to.equal('51')
+  })
 
 })
