@@ -151,6 +151,9 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
     expect(item114balance.toString()).to.equal('10')
     expect(item115balance.toString()).to.equal('9')
   })
+
+  //unecessary tests
+  /**
   it('should equip just one hand wearable item', async function(){
     
     await global.itemsFacet.equipWearables(1,staff1)
@@ -165,5 +168,5 @@ describe('Deploying Contracts, SVG and Minting Items', async function () {
    // console.log(currentWearables)
     expect(currentWearables[4].toString()).to.equal('64')
   })
-
+*/
 })
