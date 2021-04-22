@@ -45,11 +45,10 @@ async function main () {
 
   const newFuncs = [
     getSelector('function sendToAavegotchi(uint256 tokenId_,uint256 _wearableToSend,uint256 _amountToSend,address recipient_) internal'),
-    getSelector('function returnWearableToOwner(uint256 tokenId_,uint256 _wearableToSend,uint256 _amountToSend,address recipient_) internal')
-  
-  ]
-  const replacedFunc=  getSelector('function equipWearables(uint256 _tokenId, uint16[EQUIPPED_WEARABLE_SLOTS] calldata _equippedWearables) external onlyAavegotchiOwner(_tokenId)')
-
+    getSelector('function returnWearableToOwner(uint256 tokenId_,uint256 _wearableToSend,uint256 _amountToSend,address recipient_) internal'),
+    getSelector('function equipWearables(uint256 _tokenId, uint16[EQUIPPED_WEARABLE_SLOTS] calldata _equippedWearables) external onlyAavegotchiOwner(_tokenId)')
+   ]
+   
   let existingFuncs = getSelectors(facet)
   for (const selector of newFuncs) {
     if (!existingFuncs.includes(selector)) {
@@ -69,7 +68,7 @@ async function main () {
     {
       facetAddress: facet.address,
       action: FacetCutAction.Replace,
-      functionSelectors: replacedFunc
+      functionSelectors: existingFuncs
     }
   ]
   console.log(cut)
