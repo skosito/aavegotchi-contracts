@@ -35,7 +35,6 @@ let owner= await gotchiFacet.ownerOf(6845)
 console.log(owner)
     let currentGotchiBal= await (itemsFacet.equippedWearables(6845))
     console.log(currentGotchiBal)
-   let equippedBal=39
   })
   it('sends item back after unequipping', async function () {
 
@@ -48,7 +47,7 @@ console.log(owner)
 
    let currentSlotBal1=await(itemsFacet.balanceOf(owner,88))
    let currentSlotBal2=await(itemsFacet.balanceOf(owner,39))
-   let currentGotchiBal1= await (itemsFacet.equippedWearables(6845))
+   let currentGotchiBal= await (itemsFacet.equippedWearables(6845))
    console.log(currentGotchiBal)
 
     expect(currentSlotBal1.toString()).to.equal('1')
