@@ -13,7 +13,7 @@ describe('Test uneqipping', async function () {
   ]
 
   let headequip=[
-    0, 0, 0, 39, 0, 0,
+    88, 0, 0, 39, 0, 0,
     0, 0, 0,  0, 0, 0,
     0, 0, 0,  0
   ]
@@ -22,6 +22,8 @@ describe('Test uneqipping', async function () {
     global.account="0xF3a57FAbea6e198403864640061E3abc168cee80"
     global.signer=ethers.provider.getSigner(global.account)
     gotchiFacet = (await ethers.getContractAt('contracts/Aavegotchi/facets/AavegotchiFacet.sol:AavegotchiFacet', diamondAddress))
+    itemsFacet = (await ethers.getContractAt('contracts/Aavegotchi/facets/ItemsFacet.sol:ItemsFacet', diamondAddress)).connect(global.signer)
+   
     const impersonate=await hre.network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [global.account]
@@ -31,24 +33,26 @@ console.log(impersonate)
 
 let owner= await gotchiFacet.ownerOf(6845)
 console.log(owner)
-    //let currentGotchiBal= await (itemsFacet.equippedWearables(6845))
-    itemsFacet = (await ethers.getContractAt('contracts/Aavegotchi/facets/ItemsFacet.sol:ItemsFacet', diamondAddress)).connect(global.signer)
+    let currentGotchiBal= await (itemsFacet.equippedWearables(6845))
+    console.log(currentGotchiBal)
    let equippedBal=39
   })
   it('sends item back after unequipping', async function () {
 
-    let owner="0xF3a57FAbea6e198403864640061E3abc168cee80"
+    let owner=global.account
 
   
    const signer = ethers.provider.getSigner(global.account)
-   
-   
 
    await global.itemsFacet.equipWearables(6845,totalUnequip)
 
-   let currentSlotBal=await(itemsFacet.balanceOf(owner,39))
+   let currentSlotBal1=await(itemsFacet.balanceOf(owner,88))
+   let currentSlotBal2=await(itemsFacet.balanceOf(owner,39))
+   let currentGotchiBal1= await (itemsFacet.equippedWearables(6845))
+   console.log(currentGotchiBal)
 
-    expect(currentSlotBal.toString()).to.equal('1')
+    expect(currentSlotBal1.toString()).to.equal('1')
+    expect(currentSlotBal2.toString()).to.equal('1')
      
   })
 

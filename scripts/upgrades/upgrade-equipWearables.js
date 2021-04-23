@@ -38,24 +38,18 @@ async function main () {
     throw Error('Incorrect network selected')
   }
 
-  const Facet = await ethers.getContractFactory('contracts/Aavegotchi/facets/AavegotchiFacet.sol:AavegotchiFacet')
-  facet = await Facet.deploy()
+  const itemsFacet = await ethers.getContractFactory('contracts/Aavegotchi/facets/ItemsFacet.sol:ItemsFacet')
+  facet = await itemsFacet.deploy()
   await facet.deployed()
   console.log('Deployed facet:', facet.address)
 
   const newFuncs = [
-    getSelector('function sendToAavegotchi(uint256 tokenId_,uint256 _wearableToSend,uint256 _amountToSend,address recipient_) internal'),
-    getSelector('function returnWearableToOwner(uint256 tokenId_,uint256 _wearableToSend,uint256 _amountToSend,address recipient_) internal'),
-    getSelector('function equipWearables(uint256 _tokenId, uint16[EQUIPPED_WEARABLE_SLOTS] calldata _equippedWearables) external onlyAavegotchiOwner(_tokenId)')
+    getSelector('function equipWearables(uint256 _tokenId, uint16[EQUIPPED_WEARABLE_SLOTS] calldata _equippedWearables) external')
    ]
-   
-  let existingFuncs = getSelectors(facet)
-  for (const selector of newFuncs) {
-    if (!existingFuncs.includes(selector)) {
-      throw Error(`Selector ${selector} not found`)
-    }
-  }
-  existingFuncs = existingFuncs.filter(selector => !newFuncs.includes(selector))
+
+   let existingItemsFuncs = getSelectors(facet)
+
+  existingItemsFuncs = existingItemsFuncs.filter(selector => !newFuncs.includes(selector))
 
   const FacetCutAction = { Add: 0, Replace: 1, Remove: 2 }
 
@@ -68,7 +62,7 @@ async function main () {
     {
       facetAddress: facet.address,
       action: FacetCutAction.Replace,
-      functionSelectors: existingFuncs
+      functionSelectors: existingItemsFuncs
     }
   ]
   console.log(cut)
@@ -86,7 +80,6 @@ async function main () {
   }
   console.log('Completed diamond cut: ', tx.hash)
 
-  facet = await ethers.getContractAt('contracts/Aavegotchi/facets/ItemsFacet.sol:ItemsFacet', diamondAddress)
 
 }
 
