@@ -210,7 +210,7 @@ contract AavegotchiGameFacet is Modifiers {
         }
     }
 
-    function addPetter() onlyOwner external {
+    function addPetter() external {
         address sender = LibMeta.msgSender();
         petters[sender] = true;
     }
