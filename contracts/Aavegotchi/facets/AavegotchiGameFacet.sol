@@ -215,6 +215,14 @@ contract AavegotchiGameFacet is Modifiers {
         petters[sender] = true;
     }
 
+    function addPetterOnlyOwner(address _newPetter) onlyOwner external {
+        petters[_newPetter] = true;
+    }
+
+    function removePetterOnlyOwner(address _newPetter) onlyOwner external {
+        petters[_newPetter] = false;
+    }
+
     function pet(uint256[] calldata _tokenIds) external {
         address sender = LibMeta.msgSender();
         for (uint256 i; i < _tokenIds.length; i++) {
