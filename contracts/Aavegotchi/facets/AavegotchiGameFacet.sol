@@ -212,15 +212,15 @@ contract AavegotchiGameFacet is Modifiers {
 
     function addPetter() external {
         address sender = LibMeta.msgSender();
-        petters[sender] = true;
+        s.petters[sender] = true;
     }
 
     function addPetterOnlyOwner(address _newPetter) onlyOwner external {
-        petters[_newPetter] = true;
+        s.petters[_newPetter] = true;
     }
 
     function removePetterOnlyOwner(address _newPetter) onlyOwner external {
-        petters[_newPetter] = false;
+        s.petters[_newPetter] = false;
     }
 
     function pet(uint256[] calldata _tokenIds) external {
@@ -229,7 +229,7 @@ contract AavegotchiGameFacet is Modifiers {
             uint256 tokenId = _tokenIds[i];
             address owner = s.aavegotchis[tokenId].owner;
             require(
-                sender == owner || s.operators[owner][sender] || s.approved[tokenId] == sender || petters[sender],
+                sender == owner || s.operators[owner][sender] || s.approved[tokenId] == sender || s.petters[sender],
                 "AavegotchiGameFacet: Not owner of token or approved or petter"
             );
             LibAavegotchi.interact(tokenId);
