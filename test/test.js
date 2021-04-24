@@ -68,12 +68,14 @@ const test2WearableId = '36'
 const testSlot = '0'
 
 describe('Deploying Contracts, SVG and Minting Aavegotchis', async function () {
+  this.timeout(300000)
   before(async function () {
     const deployVars = await deployProject("test")
     global.set = true
     global.account = deployVars.account
     global.aavegotchiDiamond = deployVars.aavegotchiDiamond
     global.aavegotchiFacet = deployVars.aavegotchiFacet
+    global.aavegotchiGameFacet = deployVars.aavegotchiGameFacet
     global.itemsFacet = deployVars.itemsFacet
     global.collateralFacet = deployVars.collateralFacet
     global.shopFacet = deployVars.shopFacet
@@ -92,7 +94,38 @@ describe('Deploying Contracts, SVG and Minting Aavegotchis', async function () {
     const oneMillion = ethers.utils.parseEther('10000000')
     expect(balance).to.equal(oneMillion)
   })
-})
+});
+
+describe('pet', function() {
+  it('should fail if not owner of token or approved or petter', async function() {
+    // none condition is set, so it should revert
+    await truffleAssert.reverts(global.aavegotchiGameFacet.pet([testAavegotchiId]), 'AavegotchiGameFacet: Not owner of token or approved or petter');
+
+    // check if there were no interactions with testAavegotchiId
+    const kinship = await global.aavegotchiGameFacet.kinship(testAavegotchiId);
+    expect(kinship).to.equal(0);
+  });
+
+  it('should succeed if all conditions are ok', async function() {
+    // create new aavegotchi
+    const balance = await ghstTokenContract.balanceOf(account)
+    await ghstTokenContract.approve(aavegotchiDiamond.address, balance)
+    const buyAmount = ethers.utils.parseEther('100')
+    await global.shopFacet.buyPortals(account, buyAmount)
+
+    // approve
+    await global.aavegotchiFacet.approve(account, testAavegotchiId);
+    await global.aavegotchiFacet.setApprovalForAll(account, true);
+    
+    // set sender as petter
+    await global.aavegotchiGameFacet.addPetter();
+
+    // pet aavegotchi and check if there were interactions with testAavegotchiId
+    await global.aavegotchiGameFacet.pet([testAavegotchiId]);
+    const kinship = await global.aavegotchiGameFacet.kinship(testAavegotchiId);
+    expect(kinship).not.to.equal(0);
+  });
+});
 
 describe('Buying Portals, VRF', function () {
   it('Should not fire VRF if there are no portals in batch', async function () {
