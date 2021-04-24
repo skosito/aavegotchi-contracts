@@ -210,6 +210,24 @@ contract AavegotchiGameFacet is Modifiers {
         }
     }
 
+    function addPetter() onlyOwner external {
+        address sender = LibMeta.msgSender();
+        petters[sender] = true;
+    }
+
+    function pet(uint256[] calldata _tokenIds) external {
+        address sender = LibMeta.msgSender();
+        for (uint256 i; i < _tokenIds.length; i++) {
+            uint256 tokenId = _tokenIds[i];
+            address owner = s.aavegotchis[tokenId].owner;
+            require(
+                sender == owner || s.operators[owner][sender] || s.approved[tokenId] == sender || petters[sender],
+                "AavegotchiGameFacet: Not owner of token or approved or petter"
+            );
+            LibAavegotchi.interact(tokenId);
+        }
+    }
+
     function spendSkillPoints(uint256 _tokenId, int16[4] calldata _values) external onlyUnlocked(_tokenId) onlyAavegotchiOwner(_tokenId) {
         //To test (Dan): Prevent underflow (is this ok?), see require below
         uint256 totalUsed;

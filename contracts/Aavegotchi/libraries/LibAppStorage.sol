@@ -230,6 +230,7 @@ struct AppStorage {
     mapping(uint256 => uint256) sleeves;
     // mapping(address => mapping(uint256 => address)) petOperators;
     // mapping(address => uint256[]) petOperatorTokenIds;
+    mapping(address => bool) petters;
 }
 
 library LibAppStorage {
